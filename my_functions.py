@@ -132,6 +132,110 @@ def create_cluster_name(df,df_name,model):
     return df_new
 
 # -----------------------------------------------------------------------------------
+def format_RFM(st,df,occupation,visitor=False):
+    ClusterName=df['ClusterName'].iloc[0]
+    Recency=df['Recency'].iloc[0]
+    Frequency=df['Frequency'].iloc[0]
+    Monetary=df['Monetary'].iloc[0]
+
+    if visitor:
+        st.markdown(f"<h4 style='text-align: center; color:'>🎉Khách hàng đã được phân vào nhóm:</h4>", unsafe_allow_html=True)                    
+        st.markdown(f"<h3 style='text-align: center; color: #FF4B4B'>{ClusterName}</h3>", unsafe_allow_html=True)       
+
+        col1,col2,col3=st.columns(3)     
+        with col1:
+            st.write('')
+            st.write('')
+            st.markdown(
+                f"""
+                <div style='text-align: center;'>
+                    <span style='display: block; font-size: 40px;'>📅</span>  <!-- Icon -->
+                    <span style='display: block; font-size: 25px;color: #00A6ED'>Recency<br>{Recency}</span>  <!-- Text -->
+                </div>
+                """,
+                unsafe_allow_html=True
+            )                          
+        with col2:
+            st.write('')
+            st.write('')
+            st.markdown(
+                f"""
+                <div style='text-align: center;'>
+                    <span style='display: block; font-size: 40px;'>🔁</span>  <!-- Icon -->
+                    <span style='display: block; font-size: 25px;color: #00A6ED'>Frequency<br>{Frequency}</span>  <!-- Text -->
+                </div>
+                """,
+                unsafe_allow_html=True
+            )                  
+        with col3:
+            st.write('')
+            st.write('')
+            st.markdown(
+                f"""
+                <div style='text-align: center;'>
+                    <span style='display: block; font-size: 40px;'>💴</span>  <!-- Icon -->
+                    <span style='display: block; font-size: 25px;color: #00A6ED'>Monetary<br>{Monetary}</span>  <!-- Text -->
+                </div>
+                """,
+                unsafe_allow_html=True
+            )                   
+    else:       
+        st.markdown(f"<h4 style='text-align: center; color:'>🎉Khách hàng id=<span style='color: #29B09D;'>{occupation}</span> đã được phân vào nhóm:</h4>", unsafe_allow_html=True)                    
+        st.markdown(f"<h3 style='text-align: center; color: #FF4B4B'>{ClusterName}</h3>", unsafe_allow_html=True)     
+          
+        amount=df['amount'].iloc[0] 
+
+        col1,col2,col3,col4=st.columns(4)  
+        with col1:
+            st.write('')
+            st.write('')
+            st.markdown(
+                f"""
+                <div style='text-align: center;'>
+                    <span style='display: block; font-size: 40px;'>📅</span>  <!-- Icon -->
+                    <span style='display: block; font-size: 25px;color: #00A6ED'>Recency<br>{Recency}</span>  <!-- Text -->
+                </div>
+                """,
+                unsafe_allow_html=True
+            )                          
+        with col2:
+            st.write('')
+            st.write('')
+            st.markdown(
+                f"""
+                <div style='text-align: center;'>
+                    <span style='display: block; font-size: 40px;'>🔁</span>  <!-- Icon -->
+                    <span style='display: block; font-size: 25px;color: #00A6ED'>Frequency<br>{Frequency}</span>  <!-- Text -->
+                </div>
+                """,
+                unsafe_allow_html=True
+            )                  
+        with col3:
+            st.write('')
+            st.write('')
+            st.markdown(
+                f"""
+                <div style='text-align: center;'>
+                    <span style='display: block; font-size: 40px;'>💴</span>  <!-- Icon -->
+                    <span style='display: block; font-size: 25px;color: #00A6ED'>Monetary<br>{Monetary}</span>  <!-- Text -->
+                </div>
+                """,
+                unsafe_allow_html=True
+            )                  
+        with col4:
+            st.write('')
+            st.write('')
+            st.markdown(
+                f"""
+                <div style='text-align: center;'>
+                    <span style='display: block; font-size: 40px'>🛒</span>  <!-- Icon -->
+                    <span style='display: block; font-size: 25px;color: #00A6ED'>Amount<br>{round(amount,2)}</span>  <!-- Text -->
+                </div>
+                """,
+                unsafe_allow_html=True
+            ) 
+
+# -----------------------------------------------------------------------------------
 def select_one_customers_by_id(customer_id_list,df,st):
     options = ['']+customer_id_list['Member_number'].tolist()
     occupation = st.selectbox('Chọn khách hàng theo id (Member_number):',options,
@@ -144,8 +248,9 @@ def select_one_customers_by_id(customer_id_list,df,st):
         if not selected_cus.empty:
             selected_cus=selected_cus.groupby(['ClusterName','Recency','Frequency','Monetary']).agg({'amount':'sum'})
             selected_cus.reset_index(inplace=True)
-            st.subheader('Khách hàng đã được phân nhóm 🎉')
-            st.markdown(format_table(selected_cus).to_html(), unsafe_allow_html=True)    
+            format_RFM(st=st,df=selected_cus,occupation=occupation,visitor=False)                
+            st.write('')
+            st.divider()
             giai_thich_ClusterName(st,selected_cus['ClusterName'].iloc[0])
 
 # -----------------------------------------------------------------------------------
@@ -173,9 +278,9 @@ def select_one_customers_by_RFM(df,df_name,model,st):
     cols=['Recency','Frequency','Monetary']
     df_new=pd.DataFrame([[R,F,M]],columns=cols)
     df_new=create_cluster_name(df_new,df_name,model)
-
-    st.subheader('Khách hàng đã được phân nhóm 🎉')
-    st.markdown(format_table(df_new).to_html(), unsafe_allow_html=True)
+    format_RFM(st,df_new,-1,True)
+    st.write('')
+    st.divider()
     giai_thich_ClusterName(st,df_new['ClusterName'].iloc[0])
 
 # -----------------------------------------------------------------------------------    
