@@ -1,0 +1,6 @@
+RFM_Level,RecencyMean,FrequencyMean,MonetaryMean,Count,Percent
+LOST,423.0,2.0,51.0,922,23.65
+LOYAL,137.0,6.0,129.0,692,17.75
+NEW,22.0,2.0,23.0,67,1.72
+REGULARS,122.0,3.0,75.0,1934,49.62
+STARS,28.0,7.0,174.0,283,7.26

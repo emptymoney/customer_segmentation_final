@@ -1,0 +1,7 @@
+ClusterName,RecencyMean,FrequencyMean,MonetaryMean,Count,Percent
+Diamond Customers,66.0,6.0,180.0,555,14.24
+Lost Customers,575.0,2.0,35.0,258,6.62
+Loyal Customers,41.0,4.0,75.0,993,25.47
+New Customers,384.0,3.0,55.0,544,13.96
+Potential Customers,252.0,4.0,81.0,696,17.86
+Regular Customers,142.0,4.0,72.0,852,21.86
