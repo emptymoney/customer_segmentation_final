@@ -140,100 +140,48 @@ def format_RFM(st,df,occupation,visitor=False):
 
     if visitor:
         st.markdown(f"<h4 style='text-align: center; color:'>🎉Khách hàng đã được phân vào nhóm:</h4>", unsafe_allow_html=True)                    
-        st.markdown(f"<h3 style='text-align: center; color: #FF4B4B'>{ClusterName}</h3>", unsafe_allow_html=True)       
-
-        col1,col2,col3=st.columns(3)     
-        with col1:
-            st.write('')
-            st.write('')
-            st.markdown(
-                f"""
-                <div style='text-align: center;'>
-                    <span style='display: block; font-size: 40px;'>📅</span>  <!-- Icon -->
-                    <span style='display: block; font-size: 25px;color: #00A6ED'>Recency<br>{Recency}</span>  <!-- Text -->
-                </div>
-                """,
-                unsafe_allow_html=True
-            )                          
-        with col2:
-            st.write('')
-            st.write('')
-            st.markdown(
-                f"""
-                <div style='text-align: center;'>
-                    <span style='display: block; font-size: 40px;'>🔁</span>  <!-- Icon -->
-                    <span style='display: block; font-size: 25px;color: #00A6ED'>Frequency<br>{Frequency}</span>  <!-- Text -->
-                </div>
-                """,
-                unsafe_allow_html=True
-            )                  
-        with col3:
-            st.write('')
-            st.write('')
-            st.markdown(
-                f"""
-                <div style='text-align: center;'>
-                    <span style='display: block; font-size: 40px;'>💴</span>  <!-- Icon -->
-                    <span style='display: block; font-size: 25px;color: #00A6ED'>Monetary<br>{Monetary}</span>  <!-- Text -->
-                </div>
-                """,
-                unsafe_allow_html=True
-            )                   
-    else:       
+        st.markdown(f"<h3 style='text-align: center; color: #FF4B4B'>{ClusterName}</h3>", unsafe_allow_html=True)    
+    else:
         st.markdown(f"<h4 style='text-align: center; color:'>🎉Khách hàng id=<span style='color: #29B09D;'>{occupation}</span> đã được phân vào nhóm:</h4>", unsafe_allow_html=True)                    
-        st.markdown(f"<h3 style='text-align: center; color: #FF4B4B'>{ClusterName}</h3>", unsafe_allow_html=True)     
-          
-        amount=df['amount'].iloc[0] 
+        st.markdown(f"<h3 style='text-align: center; color: #FF4B4B'>{ClusterName}</h3>", unsafe_allow_html=True)  
 
-        col1,col2,col3,col4=st.columns(4)  
-        with col1:
-            st.write('')
-            st.write('')
-            st.markdown(
-                f"""
-                <div style='text-align: center;'>
-                    <span style='display: block; font-size: 40px;'>📅</span>  <!-- Icon -->
-                    <span style='display: block; font-size: 25px;color: #00A6ED'>Recency<br>{Recency}</span>  <!-- Text -->
-                </div>
-                """,
-                unsafe_allow_html=True
-            )                          
-        with col2:
-            st.write('')
-            st.write('')
-            st.markdown(
-                f"""
-                <div style='text-align: center;'>
-                    <span style='display: block; font-size: 40px;'>🔁</span>  <!-- Icon -->
-                    <span style='display: block; font-size: 25px;color: #00A6ED'>Frequency<br>{Frequency}</span>  <!-- Text -->
-                </div>
-                """,
-                unsafe_allow_html=True
-            )                  
-        with col3:
-            st.write('')
-            st.write('')
-            st.markdown(
-                f"""
-                <div style='text-align: center;'>
-                    <span style='display: block; font-size: 40px;'>💴</span>  <!-- Icon -->
-                    <span style='display: block; font-size: 25px;color: #00A6ED'>Monetary<br>{Monetary}</span>  <!-- Text -->
-                </div>
-                """,
-                unsafe_allow_html=True
-            )                  
-        with col4:
-            st.write('')
-            st.write('')
-            st.markdown(
-                f"""
-                <div style='text-align: center;'>
-                    <span style='display: block; font-size: 40px'>🛒</span>  <!-- Icon -->
-                    <span style='display: block; font-size: 25px;color: #00A6ED'>Amount<br>{round(amount,2)}</span>  <!-- Text -->
-                </div>
-                """,
-                unsafe_allow_html=True
-            ) 
+    col1,col2,col3=st.columns(3)     
+    with col1:
+        st.write('')
+        st.write('')
+        st.markdown(
+            f"""
+            <div style='text-align: center;'>
+                <span style='display: block; font-size: 40px;'>📅</span>  <!-- Icon -->
+                <span style='display: block; font-size: 25px;color: #00A6ED'>Recency<br>{Recency}</span>  <!-- Text -->
+            </div>
+            """,
+            unsafe_allow_html=True
+        )                          
+    with col2:
+        st.write('')
+        st.write('')
+        st.markdown(
+            f"""
+            <div style='text-align: center;'>
+                <span style='display: block; font-size: 40px;'>🔁</span>  <!-- Icon -->
+                <span style='display: block; font-size: 25px;color: #00A6ED'>Frequency<br>{Frequency}</span>  <!-- Text -->
+            </div>
+            """,
+            unsafe_allow_html=True
+        )                  
+    with col3:
+        st.write('')
+        st.write('')
+        st.markdown(
+            f"""
+            <div style='text-align: center;'>
+                <span style='display: block; font-size: 40px;'>💴</span>  <!-- Icon -->
+                <span style='display: block; font-size: 25px;color: #00A6ED'>Monetary<br>{Monetary}</span>  <!-- Text -->
+            </div>
+            """,
+            unsafe_allow_html=True
+        )         
 
 # -----------------------------------------------------------------------------------
 def select_one_customers_by_id(customer_id_list,df,st):
@@ -301,12 +249,14 @@ def upload_customers_file(st,model,df_name):
     if file is not None:
         df_cus_file = pd.read_csv(file)     
         df_cus_file=df_cus_file.set_index('Member_number') 
-        st.write('#### Nội dung file upload')  
-        st.markdown(format_table(df_cus_file).to_html(), unsafe_allow_html=True)        
+        st.write('#### Nội dung file upload')          
+        st.write(df_cus_file)
+        # st.markdown(format_table(df_cus_file).to_html(), unsafe_allow_html=True)        
         submitted = st.button("Thực hiện phân nhóm")
         if submitted:
             df_cus_file=create_cluster_name(df_cus_file,df_name,model)
-            df_cus_file=df_cus_file.reset_index()
+            df_cus_file['Monetary']=df_cus_file['Monetary'].map(lambda x: f'{x:.1f}')
+            df_cus_file=df_cus_file.reset_index()            
             st.subheader('Bảng phân nhóm danh sách khách hàng 🎉')
             st.markdown(format_table(df_cus_file).to_html(), unsafe_allow_html=True)
     else:
@@ -343,6 +293,37 @@ def draw_top_products_cluster_info(y, ylabel, hue, title, legend_title, data):
     fig.update_traces(texttemplate='%{y:.0f}', textposition='outside')
 
     return fig
+
+def so_sanh_cac_thuat_toan(st,df):
+    tieu_de=df.columns
+    html_style="""
+        <style>
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                word-wrap: break-word; /* Cho phép text tự động xuống dòng */
+                white-space: normal; /* Giúp chữ không bị tràn ra ngoài */
+            }
+            th {
+                background-color: #f2f2f2;
+                text-align: left;
+            }
+        </style>
+        """
+    # Tạo bảng HTML từ dữ liệu
+    html_table = "<table border='1' style='width:100%; text-align:left;'>"
+    html_table += f"<tr><th>{tieu_de[0]}</th><th>{tieu_de[1]}</th><th>{tieu_de[2]}</th><th>{tieu_de[3]}</th></tr>"
+    for itr,row in df.iterrows():
+        html_table += f"<tr><td>{row['Thuật toán']}</td><td>{row['Nguyên lý']}</td><td>{row['Ưu điểm']}</td><td>{row['Nhược điểm']}</td></tr>"
+    html_table += "</table>"
+
+    # Hiển thị bảng
+    st.markdown(html_style + html_table, unsafe_allow_html=True)    
+
 
 # -----------------------------------------------------------------------------------
 def truc_quan_hoa_treemap(rfm_agg,modelName):        

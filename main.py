@@ -1,6 +1,6 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-import my_pages2 as mp
+import my_pages as mp
 
 menu = ["Trang chủ", "Yêu cầu của doanh nghiệp","Các thuật toán thử nghiệm", "Lựa chọn kết quả","Ứng dụng phân nhóm"]
 with st.sidebar:

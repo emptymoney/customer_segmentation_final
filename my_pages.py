@@ -1,26 +1,24 @@
 import pandas as pd
 import pickle
-import my_funcs as fn
-import my_functions as fn2
+import my_functions as fn
+# from st_aggrid import AgGrid, GridOptionsBuilder
 
 
-df=pd.read_csv('files/df.csv')
-df_RFM=pd.read_csv('files/df_now.csv')
+df_full=pd.read_csv('files/df_full.csv')
+df_name=pd.read_csv('files/df_name.csv')
+df_now=pd.read_csv('files/df_now.csv')
+rfm_agg=pd.read_csv('files/rfm_agg.csv')
+df_SoSanhThuatToan=pd.read_csv('files/SoSanhThuatToan.csv',delimiter=';')
+
 df_RFM_TapLuat=pd.read_csv('files/df_RFM_TapLuat.csv')
-df_now=df_RFM.copy()
-scaled_data=pd.read_csv('files/scaled_data.csv')
+rfm_agg_TapLuat=pd.read_csv('files/rfm_agg_TapLuat.csv')
 
-model = pickle.load(open('models/customer_segmentation_model.sav', 'rb'))
-gmm_model=pickle.load(open('models/gmm_model.pkl', 'rb'))
+df_now_gmm=pd.read_csv('files/df_now_gmm.csv')
+rfm_agg_gmm=pd.read_csv('files/rfm_agg_gmm.csv')
 
-df_now=fn.gan_nhan_cum_cho_khach_hang(df_now,model)
-rfm_agg2=fn.tinh_gia_tri_tb_RFM(df_now)
-df_merged = pd.merge(df, df_now, left_on='Member_number', right_index=True, how='inner')
-customers=fn.get_list_customers(df_merged)
-random_customers = customers.sample(n=3, random_state=40)
+kmeans_model=pickle.load(open('models/kmeans_model.pkl', 'rb'))
 
 #-------------------------------------------------------------
-
 def trang_chu(st):
     st.markdown("<h1 style='text-align: center;'>Đồ Án Tốt Nghiệp<br>Data Science & Machine Learning</h1>", unsafe_allow_html=True)    
     st.markdown("<h2 style='text-align: center;font-weight: bold; color: blue'>Đề tài: Phân nhóm khách hàng</h2>", unsafe_allow_html=True)
@@ -34,84 +32,112 @@ def yeu_cau_cua_doanh_nghiep(st):
 
 # -----------------------------------------------------------------------------------
 def cac_thuat_toan_thu_nghiem(st):
-    tab1, tab2, tab3 = st.tabs(["Tập Luật", "Thuật toán GMM", "Thuật toán KMeans"])
+    tab1, tab2, tab3 = st.tabs(["Tập Luật", "Thuật toán GMM", "Thuật toán KMeans"])   
     with tab1:
-        st.write("### Tập Luật chia làm 5 nhóm")
-        df_RFM_TapLuat.rename(columns={'RFM_Level': 'Cluster'}, inplace=True)
-        df_RFM_TapLuat['ClusterName']=df_RFM_TapLuat['Cluster']
-
-        rfm_agg3=fn.tinh_gia_tri_tb_RFM(df_RFM_TapLuat)
+        st.write("### Tập Luật chia làm 5 nhóm") 
         st.write("**Tính giá trị trung bình RFM cho các nhóm**")
-        st.markdown(fn.format_table(rfm_agg3).to_html(), unsafe_allow_html=True)
-        fn.ve_cac_bieu_do(rfm_agg3,df_RFM_TapLuat,st,'Tập luật') 
+        st.markdown(fn.format_table(rfm_agg_TapLuat).to_html(), unsafe_allow_html=True)
+        fn.ve_cac_bieu_do(rfm_agg_TapLuat,df_RFM_TapLuat,st,'Tập luật') 
     with tab2:
-        st.write("### GMM chia làm 8 nhóm")
-        df_RFM['Cluster'] = gmm_model.predict(scaled_data)
-        df_RFM['ClusterName'] = df_RFM['Cluster'].apply(lambda x: f'Cluster {x}')    
-
-        rfm_agg=fn.tinh_gia_tri_tb_RFM(df_RFM)
-        st.write("**Tính giá trị trung bình RFM cho các nhóm**")
-        st.markdown(fn.format_table(rfm_agg).to_html(), unsafe_allow_html=True)
-        fn.ve_cac_bieu_do(rfm_agg,df_RFM,st,'GMM')    
+        st.write("### GMM chia làm 5 nhóm")
+        rfm_agg_gmm.rename(columns={'Cluster':'ClusterName'},inplace=True)
+        df_now_gmm.rename(columns={'Cluster':'ClusterName'},inplace=True)
+        df_now_gmm['ClusterName']='Cluster '+ df_now_gmm['ClusterName'].astype(str)
+        st.markdown(fn.format_table(rfm_agg_gmm).to_html(), unsafe_allow_html=True)
+        fn.ve_cac_bieu_do(rfm_agg_gmm,df_now_gmm,st,'GMM') 
     with tab3:
-        st.write("### KMeans với k=5 ,chia làm 5 nhóm")
-        st.write("**Tính giá trị trung bình RFM cho các nhóm**")
-        st.markdown(fn.format_table(rfm_agg2).to_html(), unsafe_allow_html=True)  
-        fn.ve_cac_bieu_do(rfm_agg2,df_now,st,'KMeans')     
+        st.write("### KMeans với k=6 ,chia làm 6 nhóm")
+        st.markdown(fn.format_table(rfm_agg).to_html(), unsafe_allow_html=True)
+        fn.ve_cac_bieu_do(rfm_agg,df_now,st,'KMeans') 
 
 # -----------------------------------------------------------------------------------
 def lua_chon_ket_qua(st):
-    st.markdown("<h2 style='text-align: center;'>Chọn thuật toán KMeans để làm thử nghiệm phân nhóm khách hàng</h2>", unsafe_allow_html=True) 
-    st.subheader('Sử dụng k=5 -> Chia thành 5 nhóm')   
+    st.markdown("<h2 style='text-align: center;'>Chọn thuật toán K-Means để làm thử nghiệm phân nhóm khách hàng</h2>", unsafe_allow_html=True) 
+    st.markdown("<h3 style='text-align: center;font-weight: bold; color: blue'>Sử dụng k=6 -> Chia thành 6 nhóm</h3>", unsafe_allow_html=True)    
 
-    tab1, tab2 = st.tabs(["Biểu đồ", "Top 3 sản phẩm/nhóm sản phẩm"])
+    tab1, tab2,tab3 = st.tabs(["Bảng so sánh các thuật toán","Các phân khúc khách hàng", "Top 3 sản phẩm/nhóm sản phẩm"])   
     with tab1:
-        st.write("")
-        st.write('#### 1. Tính giá trị trung bình RFM cho các nhóm')
-        st.markdown(fn.format_table(rfm_agg2.head()).to_html(), unsafe_allow_html=True)
+        st.write("Bảng so sánh các thuật toán")
+        fn.so_sanh_cac_thuat_toan(st,df_SoSanhThuatToan)
+        st.divider()
+        fig_scatter_3d_data=fn.truc_quan_hoa_scatter_3d_data(df_now,'KMeans')
+        st.plotly_chart(fig_scatter_3d_data) 
+        st.divider()
+        st.write("""
+                 **Từ biểu đồ scatter 3D cho thấy**
+                 - Các cụm khách hàng được phân tách rõ ràng
+                 - Không chồng lấn  
+                 - Phân tán đồng đều
 
-        st.write("")
-        st.write('#### 2. Các biểu đồ')
-        fn.ve_cac_bieu_do(rfm_agg2,df_now,st,'KMeans')
+                 **Từ bảng so sánh ta cần một thuật toán:**
+                 - Có tốc độ nhanh, đơn giản
+                 - Dễ tính toán và kiểm tra
+
+                 -> Ta nhận thấy rằng K-Means là thuật toán khá phù hợp trong trường hợp này                 
+                 """)       
+
+        st.markdown("<h4 style='text-align: center; color:'>Chọn <span style='color: blue;'>K-Means</span> làm thuật toán để phát triển ứng dụng</h4>", unsafe_allow_html=True) 
     with tab2:
-        # Ví dụ sử dụng với top 3 sản phẩm ưa thích
-        behavior_table = df_merged.groupby('ClusterName').apply(lambda group: fn.get_top_products_info(group, df_merged, top_n=3))
-        behavior_table=behavior_table.droplevel(level=1)
-        behavior_table=behavior_table.reset_index()         
-        st.write('#### 3. Top 3 sản phẩm/nhóm sản phẩm ưa thích nhất của mỗi nhóm')
-        behavior_table['Top3_Popular_Products'] = behavior_table['Top3_Popular_Products'].apply(lambda x: '<br>'.join(x.split(',')))
-        behavior_table['Top_3_Popular_Category'] = behavior_table['Top_3_Popular_Category'].apply(lambda x: '<br>'.join(x.split(',')))    
-        st.markdown(fn.format_table(behavior_table.head()).to_html(), unsafe_allow_html=True)    
-
+        fig=fn.truc_quan_hoa_treemap(rfm_agg,'KMeans')
+        st.plotly_chart(fig)
         st.write("##### Giải thích ClusterName:")
-        cluster_name=('Potential Customers','Lost Customers','Loyal Customers','New Customers','Diamond Customers','Regular Customers')
-        fn.giai_thich_ClusterName(st,cluster_name[0])
-        fn.giai_thich_ClusterName(st,cluster_name[1])
-        fn.giai_thich_ClusterName(st,cluster_name[2])
-        fn.giai_thich_ClusterName(st,cluster_name[3])
-        fn.giai_thich_ClusterName(st,cluster_name[4])
-        fn.giai_thich_ClusterName(st,cluster_name[5])
+        fn.giai_thich_ClusterName(st,'Diamond Customers')
+        fn.giai_thich_ClusterName(st,'Loyal Customers')
+        fn.giai_thich_ClusterName(st,'Regular Customers')
+        fn.giai_thich_ClusterName(st,'Potential Customers')
+        fn.giai_thich_ClusterName(st,'New Customers')
+        fn.giai_thich_ClusterName(st,'Lost Customers')  
+    with tab3:
+        top_products_per_cluster, top_category_per_cluster, top_products_amount_per_cluster=fn.get_top_products_cluster_info(df_full,3)
 
+        fig1=fn.draw_top_products_cluster_info(
+            y='items',
+            ylabel='Số lượng bán',
+            hue='productName',
+            title='Top 3 sản phẩm (Product) có số lượng bán lớn nhất trong mỗi Cluster',
+            legend_title='Sản phẩm',
+            data=top_products_per_cluster)
+        st.plotly_chart(fig1)
+        st.divider()
+
+        fig2=fn.draw_top_products_cluster_info(
+            y='items',
+            ylabel='Số lượng bán',
+            hue='Category',
+            title='Top 3 nhóm sản phẩm (Category) có số lượng bán lớn nhất trong mỗi Cluster',
+            legend_title='Nhóm sản phẩm',
+            data=top_category_per_cluster)      
+        st.plotly_chart(fig2)
+        st.divider()             
+
+        fig3=fn.draw_top_products_cluster_info(
+            y='amount',
+            ylabel='Tổng amount',
+            hue='productName',
+            title='Top 3 sản phẩm (Product) có tổng giá bán (amount) lớn nhất trong mỗi Cluster',
+            legend_title='Sản phẩm',
+            data=top_products_amount_per_cluster)  
+        st.plotly_chart(fig3)             
+        st.divider()
+
+        
 
 # -----------------------------------------------------------------------------------
-def ung_dung_phan_nhom(st):
-    st.write("### 📈Dự đoán và Phân nhóm Khách hàng")
-    # st.write('### Dự đoán phân nhóm khách hàng 💡')      
-    status = st.radio("**Chọn cách nhập thông tin khách hàng:**", ("🆔Nhập id khách hàng là thành viên của cửa hàng:", "📊Nhập RFM của khách hàng:","⬆️Upload file:"))
+def ung_dung_phan_nhom(st):   
+    st.write("### 📈Dự đoán và Phân nhóm Khách hàng")   
+    status = st.radio("**Chọn cách nhập thông tin khách hàng:**", ("🆔Nhập id khách hàng là thành viên của cửa hàng:", "📊Nhập RFM của khách hàng:","⬆️Upload file chứa thông tin mã khách hàng cùng với RFM:"))   
+
     st.write(f'**{status}**')
     if status=="🆔Nhập id khách hàng là thành viên của cửa hàng:":
-        selected_cus=fn.select_one_customers_by_id(customers,df_merged,False,st)
-    elif status=='📊Nhập RFM của khách hàng:':        
-        fn.select_one_customers_by_RFM(df_merged,model,st)
-    elif status=='⬆️Upload file:':           
-        st.write("##### ⬇️Download file mẫu tại đây:")        
-        fn.download_file(st,'files/file_mau.csv')    
-        st.write("##### ⬆️Upload file để phân nhóm tại đây:")        
-        fn.upload_customers_file(st,model)
-
-
-
-
+        list_customers=fn.get_list_customers(df_full)        
+        fn.select_one_customers_by_id(list_customers,df_full,st)        
+    elif status=='📊Nhập RFM của khách hàng:':                
+        fn.select_one_customers_by_RFM(df_full,df_name,kmeans_model,st)
+    elif status=='⬆️Upload file chứa thông tin mã khách hàng cùng với RFM:':    
+        st.write("**⬇️Download file mẫu tại đây:**")  
+        fn.download_file(st,'files/file_mau.csv')
+        st.write("**⬆️Upload file để phân nhóm tại đây:**")        
+        fn.upload_customers_file(st,kmeans_model,df_name) 
 
 # ===================================================================================
 if __name__ == "__main__":
