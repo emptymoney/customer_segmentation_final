@@ -1,7 +1,7 @@
 import pandas as pd
 import pickle
 import my_functions as fn
-from st_aggrid import AgGrid, GridOptionsBuilder
+# from st_aggrid import AgGrid, GridOptionsBuilder
 
 
 df_full=pd.read_csv('files/df_full.csv')
