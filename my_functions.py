@@ -1,6 +1,6 @@
 import pandas as pd
 import plotly.express as px
-
+import plotly.graph_objects as go
 
 # -----------------------------------------------------------------------------------
 def format_table(df):
@@ -132,7 +132,34 @@ def create_cluster_name(df,df_name,model):
     return df_new
 
 # -----------------------------------------------------------------------------------
-def format_RFM(st,df,occupation,visitor=False):
+def gauge_chart(value,max_values,ranges,name):  
+    steps=[]
+    for range in ranges:
+        step={'range': [range[0],range[1]],'color':range[2]}
+        steps.append(step)
+
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=value,  # Giá trị hiện tại
+        domain={'x': [0, 1], 'y': [0, 1]},  # Vị trí biểu đồ
+        title={"text":f"{name} max: {max_values}","font":{"size": 17}},
+        gauge={
+            'axis': {'range': [None, max_values]},  # Phạm vi từ 0 đến max
+            'bar': {'color': "blue"},  # Thanh giá trị màu đen
+            'steps':steps
+        }
+    ))
+
+    # Tùy chỉnh chiều cao và rộng của biểu đồ
+    fig.update_layout(
+        height=150,  # Điều chỉnh chiều cao
+        margin=dict(t=0, b=0, l=50, r=50)  # Giảm khoảng cách thừa  
+        )  
+
+    return fig
+
+# -----------------------------------------------------------------------------------
+def format_RFM(st,df,occupation,recent_values,max_values,ranges,visitor=False):
     ClusterName=df['ClusterName'].iloc[0]
     Recency=df['Recency'].iloc[0]
     Frequency=df['Frequency'].iloc[0]
@@ -148,7 +175,7 @@ def format_RFM(st,df,occupation,visitor=False):
     col1,col2,col3=st.columns(3)     
     with col1:
         st.write('')
-        st.write('')
+        st.write('')   
         st.markdown(
             f"""
             <div style='text-align: center;'>
@@ -157,10 +184,16 @@ def format_RFM(st,df,occupation,visitor=False):
             </div>
             """,
             unsafe_allow_html=True
-        )                          
+        ) 
+        st.write("")
+        st.write("")
+        st.write("")        
+        fig_gauge_chart=gauge_chart(recent_values[0],max_values[0],ranges[0],'Recency')
+        st.plotly_chart(fig_gauge_chart)                                 
     with col2:
         st.write('')
         st.write('')
+        
         st.markdown(
             f"""
             <div style='text-align: center;'>
@@ -169,10 +202,15 @@ def format_RFM(st,df,occupation,visitor=False):
             </div>
             """,
             unsafe_allow_html=True
-        )                  
+        ) 
+        st.write("")
+        st.write("")
+        st.write("")             
+        fig_gauge_chart=gauge_chart(recent_values[1],max_values[1],ranges[1],'Frequency')
+        st.plotly_chart(fig_gauge_chart)                        
     with col3:
         st.write('')
-        st.write('')
+        st.write('')      
         st.markdown(
             f"""
             <div style='text-align: center;'>
@@ -181,7 +219,12 @@ def format_RFM(st,df,occupation,visitor=False):
             </div>
             """,
             unsafe_allow_html=True
-        )         
+        )    
+        st.write("")
+        st.write("")
+        st.write("")             
+        fig_gauge_chart=gauge_chart(recent_values[2],max_values[2],ranges[2],'Monetary')
+        st.plotly_chart(fig_gauge_chart)       
 
 # -----------------------------------------------------------------------------------
 def select_one_customers_by_id(customer_id_list,df,st):
@@ -191,12 +234,35 @@ def select_one_customers_by_id(customer_id_list,df,st):
     )
 
     if occupation!='':
+        
         st.write("Khách hàng được chọn:", occupation)
         selected_cus=df[df['Member_number']==occupation]
         if not selected_cus.empty:
             selected_cus=selected_cus.groupby(['ClusterName','Recency','Frequency','Monetary']).agg({'amount':'sum'})
             selected_cus.reset_index(inplace=True)
-            format_RFM(st=st,df=selected_cus,occupation=occupation,visitor=False)                
+   
+            recent_values=[selected_cus['Recency'].iloc[0],selected_cus['Frequency'].iloc[0],selected_cus['Monetary'].iloc[0]]
+            max_values=[df['Recency'].max(),df['Frequency'].max(),df['Monetary'].max()]
+
+            # Xác định các phạm vi
+            ranges = [
+                [
+                    (0, df['Recency'].max() * 0.33, "#32CD32"),     # Từ 0 đến 33% (Tốt) (Lime Green)
+                    (df['Recency'].max() * 0.33, df['Recency'].max() * 0.66, "#FFD700"),  # Từ 33% đến 66% (Trung bình) (Gold)
+                    (df['Recency'].max() * 0.66, float(df['Recency'].max()), "#FF6347")   # Từ 66% đến 100% (Kém) (Tomato)
+                ],
+                [
+                    (0, df['Frequency'].max() * 0.33, "#FF6347"),     # Từ 0 đến 33% (Kém) (Tomato)
+                    (df['Frequency'].max() * 0.33, df['Frequency'].max() * 0.66, "#FFD700"),  # Từ 33% đến 66% (Trung bình) (Gold)
+                    (df['Frequency'].max() * 0.66, float(df['Frequency'].max()), "#32CD32")   # Từ 66% đến 100% (Tốt) (Lime Green)
+                ],
+                [
+                    (0, df['Monetary'].max() * 0.33, "#FF6347"),     # Từ 0 đến 33% (Kém) (Tomato)
+                    (df['Monetary'].max() * 0.33, df['Monetary'].max() * 0.66, "#FFD700"),  # Từ 33% đến 66% (Trung bình) (Gold)
+                    (df['Monetary'].max() * 0.66, float(df['Monetary'].max()), "#32CD32")   # Từ 66% đến 100% (Tốt) (Lime Green) 
+                ]]               
+
+            format_RFM(st,selected_cus,occupation,recent_values,max_values,ranges,False)
             st.write('')
             st.divider()
             giai_thich_ClusterName(st,selected_cus['ClusterName'].iloc[0])
@@ -226,7 +292,28 @@ def select_one_customers_by_RFM(df,df_name,model,st):
     cols=['Recency','Frequency','Monetary']
     df_new=pd.DataFrame([[R,F,M]],columns=cols)
     df_new=create_cluster_name(df_new,df_name,model)
-    format_RFM(st,df_new,-1,True)
+
+    recent_values=[df_new['Recency'].iloc[0],df_new['Frequency'].iloc[0],df_new['Monetary'].iloc[0]]
+    max_values=[df['Recency'].max(),df['Frequency'].max(),df['Monetary'].max()]
+    # Xác định các phạm vi
+    ranges = [
+        [
+            (0, df['Recency'].max() * 0.33, "#32CD32"),     # Từ 0 đến 33% (Tốt) (Lime Green)
+            (df['Recency'].max() * 0.33, df['Recency'].max() * 0.66, "#FFD700"),  # Từ 33% đến 66% (Trung bình) (Gold)
+            (df['Recency'].max() * 0.66, float(df['Recency'].max()), "#FF6347")             # Từ 66% đến 100% (Kém) (Tomato)
+        ],
+        [
+            (0, df['Frequency'].max() * 0.33, "#32CD32"),     # Từ 0 đến 33% (Tốt) (Lime Green)
+            (df['Frequency'].max() * 0.33, df['Frequency'].max() * 0.66, "#FFD700"),  # Từ 33% đến 66% (Trung bình) (Gold)
+            (df['Frequency'].max() * 0.66, float(df['Frequency'].max()), "#FF6347")             # Từ 66% đến 100% (Kém) (Tomato)
+        ],
+        [
+            (0, df['Monetary'].max() * 0.33, "#32CD32"),     # Từ 0 đến 33% (Tốt) (Lime Green)
+            (df['Monetary'].max() * 0.33, df['Monetary'].max() * 0.66, "#FFD700"),  # Từ 33% đến 66% (Trung bình) (Gold)
+            (df['Monetary'].max() * 0.66, float(df['Monetary'].max()), "#FF6347")             # Từ 66% đến 100% (Kém) (Tomato)
+        ]]  
+     
+    format_RFM(st,df_new,-1,recent_values,max_values,ranges,False)
     st.write('')
     st.divider()
     giai_thich_ClusterName(st,df_new['ClusterName'].iloc[0])
@@ -294,6 +381,7 @@ def draw_top_products_cluster_info(y, ylabel, hue, title, legend_title, data):
 
     return fig
 
+# -----------------------------------------------------------------------------------
 def so_sanh_cac_thuat_toan(st,df):
     tieu_de=df.columns
     html_style="""
@@ -323,7 +411,6 @@ def so_sanh_cac_thuat_toan(st,df):
 
     # Hiển thị bảng
     st.markdown(html_style + html_table, unsafe_allow_html=True)    
-
 
 # -----------------------------------------------------------------------------------
 def truc_quan_hoa_treemap(rfm_agg,modelName):        

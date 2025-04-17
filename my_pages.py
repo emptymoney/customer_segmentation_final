@@ -1,6 +1,7 @@
 import pandas as pd
 import pickle
 import my_functions as fn
+# import plotly.express as px
 # from st_aggrid import AgGrid, GridOptionsBuilder
 
 
@@ -119,9 +120,7 @@ def lua_chon_ket_qua(st):
             data=top_products_amount_per_cluster)  
         st.plotly_chart(fig3)             
         st.divider()
-
-        
-
+     
 # -----------------------------------------------------------------------------------
 def ung_dung_phan_nhom(st):   
     st.write("### 📈Dự đoán và Phân nhóm Khách hàng")   
@@ -129,7 +128,7 @@ def ung_dung_phan_nhom(st):
 
     st.write(f'**{status}**')
     if status=="🆔Nhập id khách hàng là thành viên của cửa hàng:":
-        list_customers=fn.get_list_customers(df_full)        
+        list_customers=fn.get_list_customers(df_full)   
         fn.select_one_customers_by_id(list_customers,df_full,st)        
     elif status=='📊Nhập RFM của khách hàng:':                
         fn.select_one_customers_by_RFM(df_full,df_name,kmeans_model,st)
