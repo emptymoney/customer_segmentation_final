@@ -313,7 +313,7 @@ def select_one_customers_by_RFM(df,df_name,model,st):
             (df['Monetary'].max() * 0.66, float(df['Monetary'].max()), "#FF6347")             # Từ 66% đến 100% (Kém) (Tomato)
         ]]  
      
-    format_RFM(st,df_new,-1,recent_values,max_values,ranges,False)
+    format_RFM(st,df_new,-1,recent_values,max_values,ranges,True)
     st.write('')
     st.divider()
     giai_thich_ClusterName(st,df_new['ClusterName'].iloc[0])
