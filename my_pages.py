@@ -2,11 +2,6 @@ import pandas as pd
 import pickle
 import my_functions as fn
 
-# import matplotlib.pyplot as plt
-# import seaborn as sns # Optional, for better aesthetics
-# import plotly.express as px
-# import plotly.graph_objects as go
-
 df_RFM=pd.read_csv('files/df_RFM.csv')
 df_full=pd.read_csv('files/df_full.csv')
 df_name=pd.read_csv('files/df_name.csv')
@@ -30,19 +25,20 @@ def trang_chu(st):
 
 # -----------------------------------------------------------------------------------
 def yeu_cau_cua_doanh_nghiep(st):
-    st.image('images/CuaHang.png')
-    st.write("")
+    image_path = "images/CuaHang2.jpg"  # Thay bằng đường dẫn của bạn
+    st.image(image_path, use_container_width=True)     
     fn.yeu_cau_cua_doanh_nghiep(st)
 
 # -----------------------------------------------------------------------------------
+
 def cac_thuat_toan_thu_nghiem(st):
-    tab1, tab2, tab3,tab4 = st.tabs(["Biểu đồ phân phối RFM","Tập Luật", "Thuật toán GMM", "Thuật toán KMeans"])   
+    tab1, tab2, tab3,tab4 = st.tabs(["BIỂU ĐỒ PHÂN PHỐI RFM","TẬP LUẬT", "THUẬT TOÁN GMM", "THUẬT TOÁN K-MEANS"])   
     with tab1:   
-        fn.plot_distribution(st,df_RFM['Recency'], "Phân phối Recency", "Recency")
+        fn.plot_distribution(st,df_RFM[['Recency']], "Phân phối Recency", "Recency")
         st.divider()
-        fn.plot_distribution(st,df_RFM['Frequency'], "Phân phối Frequency", "Frequency")
+        fn.plot_distribution(st,df_RFM[['Frequency']], "Phân phối Frequency", "Frequency")
         st.divider()
-        fn.plot_distribution(st,df_RFM['Monetary'], "Phân phối Monetary", "Monetary") 
+        fn.plot_distribution(st,df_RFM[['Monetary']], "Phân phối Monetary", "Monetary") 
     with tab2:
         st.write("### Tập Luật chia làm 5 nhóm") 
         st.write("**Tính giá trị trung bình RFM cho các nhóm**")
@@ -67,9 +63,9 @@ def lua_chon_ket_qua(st):
     st.markdown("<h2 style='text-align: center;'>Chọn thuật toán K-Means để làm thử nghiệm phân nhóm khách hàng</h2>", unsafe_allow_html=True) 
     st.markdown("<h3 style='text-align: center;font-weight: bold; color: blue'>Sử dụng k=6 -> Chia thành 6 nhóm</h3>", unsafe_allow_html=True)    
 
-    tab1, tab2,tab3 = st.tabs(["Bảng so sánh các thuật toán","Các phân khúc khách hàng", "Top 3 sản phẩm/nhóm sản phẩm"])   
+    tab1, tab2,tab3 = st.tabs(["BẢNG SO SÁNH CÁC THUẬT TOÁN","CÁC PHÂN KHÚC KHÁCH HÀNG", "TOP 3 SẢN PHẨM/NHÓM SẢN PHẨM"])   
     with tab1:
-        st.write("Bảng so sánh các thuật toán")
+        st.write("**Bảng so sánh các thuật toán**")
         fn.so_sanh_cac_thuat_toan(st,df_SoSanhThuatToan)
         st.divider()
         fig_scatter_3d_data=fn.truc_quan_hoa_scatter_3d_data(df_now,'KMeans')

@@ -3,6 +3,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 import seaborn as sns
+import altair as alt
 
 # -----------------------------------------------------------------------------------
 def giai_thich_ClusterName(st,cluster_name=None):
@@ -145,63 +146,47 @@ def format_RFM(st,df,occupation,recent_values,max_values,ranges,visitor=False):
     Monetary=df['Monetary'].iloc[0]
 
     if visitor:
-        st.markdown(f"<h4 style='text-align: center; color:'>🎉Khách hàng đã được phân vào nhóm:</h4>", unsafe_allow_html=True)                    
-        st.markdown(f"<h3 style='text-align: center; color: #FF4B4B'>{ClusterName}</h3>", unsafe_allow_html=True)    
+        st.markdown(f"<h5 style='text-align: center; color:'>🎉Khách hàng đã được phân vào nhóm:</h5>", unsafe_allow_html=True)                    
+        st.markdown(f"<h4 style='text-align: center; color: #FF4B4B'>{ClusterName}</h4>", unsafe_allow_html=True)    
     else:
-        st.markdown(f"<h4 style='text-align: center; color:'>🎉Khách hàng id=<span style='color: #29B09D;'>{occupation}</span> đã được phân vào nhóm:</h4>", unsafe_allow_html=True)                    
-        st.markdown(f"<h3 style='text-align: center; color: #FF4B4B'>{ClusterName}</h3>", unsafe_allow_html=True)  
+        st.markdown(f"<h5 style='text-align: center; color:'>🎉Khách hàng id=<span style='color: #29B09D;'>{occupation}</span> đã được phân vào nhóm:</h5>", unsafe_allow_html=True)                    
+        st.markdown(f"<h4 style='text-align: center; color: #FF4B4B'>{ClusterName}</h4>", unsafe_allow_html=True)  
 
     col1,col2,col3=st.columns(3)     
-    with col1:
-        st.write('')
-        st.write('')   
+    with col1:  
         st.markdown(
             f"""
             <div style='text-align: center;'>
-                <span style='display: block; font-size: 40px;'>📅</span>  <!-- Icon -->
-                <span style='display: block; font-size: 25px;color: #00A6ED'>Recency<br>{Recency}</span>  <!-- Text -->
+                <span style='display: block; font-size: 35px;'>📅</span>  <!-- Icon -->
+                <span style='display: block; font-size: 20px;color: #00A6ED'>Recency<br>{Recency}</span>  <!-- Text -->
             </div>
             """,
             unsafe_allow_html=True
         ) 
-        st.write("")
-        st.write("")
-        st.write("")        
         fig_gauge_chart=gauge_chart(recent_values[0],max_values[0],ranges[0],'Recency')
         st.plotly_chart(fig_gauge_chart)                                 
-    with col2:
-        st.write('')
-        st.write('')
-        
+    with col2:   
         st.markdown(
             f"""
             <div style='text-align: center;'>
-                <span style='display: block; font-size: 40px;'>🔁</span>  <!-- Icon -->
-                <span style='display: block; font-size: 25px;color: #00A6ED'>Frequency<br>{Frequency}</span>  <!-- Text -->
+                <span style='display: block; font-size: 35px;'>🔁</span>  <!-- Icon -->
+                <span style='display: block; font-size: 20px;color: #00A6ED'>Frequency<br>{Frequency}</span>  <!-- Text -->
             </div>
             """,
             unsafe_allow_html=True
         ) 
-        st.write("")
-        st.write("")
-        st.write("")             
         fig_gauge_chart=gauge_chart(recent_values[1],max_values[1],ranges[1],'Frequency')
         st.plotly_chart(fig_gauge_chart)                        
-    with col3:
-        st.write('')
-        st.write('')      
+    with col3:   
         st.markdown(
             f"""
             <div style='text-align: center;'>
-                <span style='display: block; font-size: 40px;'>💴</span>  <!-- Icon -->
-                <span style='display: block; font-size: 25px;color: #00A6ED'>Monetary<br>{Monetary}</span>  <!-- Text -->
+                <span style='display: block; font-size: 35px;'>💴</span>  <!-- Icon -->
+                <span style='display: block; font-size: 20px;color: #00A6ED'>Monetary<br>{Monetary}</span>  <!-- Text -->
             </div>
             """,
             unsafe_allow_html=True
         )    
-        st.write("")
-        st.write("")
-        st.write("")             
         fig_gauge_chart=gauge_chart(recent_values[2],max_values[2],ranges[2],'Monetary')
         st.plotly_chart(fig_gauge_chart)       
 
@@ -300,16 +285,36 @@ def select_one_customers_by_id(customer_id_list,df,st):
     if occupation!='':
         
         st.write("Khách hàng được chọn:", occupation)
-        selected_cus=df[df['Member_number']==occupation]
-        if not selected_cus.empty:
-            selected_cus=selected_cus.groupby(['ClusterName','Recency','Frequency','Monetary']).agg({'amount':'sum'})
+        search_cus=df[df['Member_number']==occupation]
+        if not search_cus.empty:
+            selected_cus=search_cus.groupby(['ClusterName','Recency','Frequency','Monetary']).agg({'amount':'sum'})
             selected_cus.reset_index(inplace=True)
    
             recent_values=[selected_cus['Recency'].iloc[0],selected_cus['Frequency'].iloc[0],selected_cus['Monetary'].iloc[0]]
             max_values=[df['Recency'].max(),df['Frequency'].max(),df['Monetary'].max()]
             ranges=xac_dinh_pham_vi(df)
             format_RFM(st,selected_cus,occupation,recent_values,max_values,ranges,False)
-            st.write('')
+            # st.write('')
+
+            selected_option= str(occupation)
+
+            if selected_option:
+                # Tạo key duy nhất cho session_state dựa trên selected_option
+                expander_key = f"expander_state_{selected_option}"
+
+                # Khởi tạo trạng thái expander là True khi selectbox được chọn
+                if expander_key not in st.session_state:
+                    st.session_state[expander_key] = False  # Mặc định đóng expander
+
+                # Hiển thị expander với trạng thái từ session_state
+                with st.expander(str(selected_option), expanded=st.session_state[expander_key]):
+                    # st.markdown(format_table(search_cus).to_html(), unsafe_allow_html=True)
+                    search_cus=search_cus[['Member_number','Date','items','productName','Category','price','amount']].sort_values(by=['Date'])           
+                    search_cus.rename(columns={'Member_number':'Member_no'},inplace=True)
+                    search_cus.rename(columns={'items':'quantity'},inplace=True)
+                    st.dataframe(search_cus, hide_index=True)
+
+
             st.divider()
             giai_thich_ClusterName(st,selected_cus['ClusterName'].iloc[0])
 
@@ -468,12 +473,22 @@ def so_sanh_cac_thuat_toan(st,df):
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
 def plot_distribution(st,data, title, xlabel):
-    fig, ax = plt.subplots(figsize=(8, 6)) # Điều chỉnh kích thước biểu đồ
-    sns.histplot(data, ax=ax, bins=20, kde=True) # Optional: kde=True for density curve
-    ax.set_title(title, fontsize=14) # Điều chỉnh kích thước font chữ
-    ax.set_xlabel(xlabel, fontsize=12)
-    ax.set_ylabel("Số lượng", fontsize=12)
-    st.pyplot(fig)      
+    col1,col2=st.columns(2)
+    with col1:
+        fig1, ax1 = plt.subplots(figsize=(8, 4),dpi=300) # Điều chỉnh kích thước biểu đồ
+        sns.histplot(data, ax=ax1, bins=20, kde=True) # Optional: kde=True for density curve
+        ax1.set_title(title, fontsize=14) # Điều chỉnh kích thước font chữ
+        ax1.set_xlabel(xlabel, fontsize=12)
+        ax1.set_ylabel("Số lượng", fontsize=12)
+        st.pyplot(fig1)
+    with col2:
+        fig2, ax2 =plt.subplots(figsize=(8, 4),dpi=300)
+        sns.boxplot(data=data, ax=ax2,x=xlabel)
+        ax2.set_title(title, fontsize=14) # Điều chỉnh kích thước font chữ
+        ax2.set_xlabel(xlabel, fontsize=12)
+        # ax2.set_ylabel("Số lượng", fontsize=12)        
+        plt.title(f'Boxplot của {xlabel}')       
+        st.pyplot(fig2)
 
 # -----------------------------------------------------------------------------------
 def gauge_chart(value,max_values,ranges,name):  
