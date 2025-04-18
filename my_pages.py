@@ -1,9 +1,6 @@
 import pandas as pd
 import pickle
 import my_functions as fn
-# import plotly.express as px
-# from st_aggrid import AgGrid, GridOptionsBuilder
-
 
 df_full=pd.read_csv('files/df_full.csv')
 df_name=pd.read_csv('files/df_name.csv')

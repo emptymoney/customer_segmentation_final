@@ -3,17 +3,6 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 # -----------------------------------------------------------------------------------
-def format_table(df):
-    styler = df.style.set_table_styles(
-        [
-            {'selector': 'th', 'props': [('text-align', 'center')]},  # Canh phải tiêu đề cột
-            {'selector': 'td', 'props': [('text-align', 'center')]},  # Canh giữa nội dung
-            {'selector': 'th:first-child', 'props': [('background-color', 'lightblue')]},  # Nền xanh nhạt cho tiêu đề cột đầu tiên
-        ]    
-    )
-    return styler
-
-# -----------------------------------------------------------------------------------
 def giai_thich_ClusterName(st,cluster_name=None):
     if cluster_name=='Diamond Customers':
         st.write(''' 
@@ -119,6 +108,21 @@ def yeu_cau_cua_doanh_nghiep(st):
         ''')   
     
 # -----------------------------------------------------------------------------------
+def format_table(df):
+    df_new=df.copy()
+    if 'Monetary' in df.columns:
+        df_new['Monetary']=df_new['Monetary'].map(lambda x: f'{x:.1f}')
+
+    styler = df_new.style.set_table_styles(
+        [
+            {'selector': 'th', 'props': [('text-align', 'center')]},  # Canh phải tiêu đề cột
+            {'selector': 'td', 'props': [('text-align', 'center')]},  # Canh giữa nội dung
+            {'selector': 'th:first-child', 'props': [('background-color', 'lightblue')]},  # Nền xanh nhạt cho tiêu đề cột đầu tiên
+        ]    
+    )
+    return styler    
+    
+# -----------------------------------------------------------------------------------
 def get_list_customers(df):
     unique_customers = df['Member_number'].unique()
     columns = ['Member_number']
@@ -130,33 +134,6 @@ def create_cluster_name(df,df_name,model):
     df["Cluster"]=model.predict(df)
     df_new=pd.merge(df,df_name[['ClusterName']],left_on='Cluster',right_index=True,how='inner')
     return df_new
-
-# -----------------------------------------------------------------------------------
-def gauge_chart(value,max_values,ranges,name):  
-    steps=[]
-    for range in ranges:
-        step={'range': [range[0],range[1]],'color':range[2]}
-        steps.append(step)
-
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=value,  # Giá trị hiện tại
-        domain={'x': [0, 1], 'y': [0, 1]},  # Vị trí biểu đồ
-        title={"text":f"{name} max: {max_values}","font":{"size": 17}},
-        gauge={
-            'axis': {'range': [None, max_values]},  # Phạm vi từ 0 đến max
-            'bar': {'color': "blue"},  # Thanh giá trị màu đen
-            'steps':steps
-        }
-    ))
-
-    # Tùy chỉnh chiều cao và rộng của biểu đồ
-    fig.update_layout(
-        height=150,  # Điều chỉnh chiều cao
-        margin=dict(t=0, b=0, l=50, r=50)  # Giảm khoảng cách thừa  
-        )  
-
-    return fig
 
 # -----------------------------------------------------------------------------------
 def format_RFM(st,df,occupation,recent_values,max_values,ranges,visitor=False):
@@ -226,6 +203,91 @@ def format_RFM(st,df,occupation,recent_values,max_values,ranges,visitor=False):
         fig_gauge_chart=gauge_chart(recent_values[2],max_values[2],ranges[2],'Monetary')
         st.plotly_chart(fig_gauge_chart)       
 
+# -----------------------------------------------------------------------------------        
+def format_RFM_2(st,df):
+    css_string = """
+        <style>
+        .centered-content {
+            text-align: center;
+        }
+        .centered-content span {
+            display: block;
+        }
+        .centered-content .icon {
+            font-size: 35px; 
+        }
+        .centered-content .text {
+            font-size: 15px;
+            color: #00A6ED;
+        }
+        /* Selector CSS cụ thể hơn cho cột */
+        div[data-testid="stVerticalBlock"] .centered-content .icon { 
+            font-size: 35px !important; 
+        }
+        div[data-testid="stVerticalBlock"] .centered-content .text {
+            font-size: 15px !important;
+        }
+        </style>
+    """   
+           
+    col1,col2,col3,col4=st.columns(4)
+    with col1:
+        html_string1 = f"""
+        <div class="centered-content">      
+            <span class="icon">👨‍👩‍👧‍👦</span>  <!-- Icon -->     
+            <span class="text">Số Khách hàng:{df['Member_number'].nunique()}</span>  <!-- Text -->     
+            <span class="text">Số Cluster:{df['ClusterName'].nunique()}</span>  <!-- Text -->               
+        </div>
+        """
+        final_html = css_string + html_string1
+        st.markdown(final_html, unsafe_allow_html=True)
+       
+    with col2:    
+        html_string2 = f"""
+        <div class="centered-content">      
+            <span class="icon">📅</span>  <!-- Icon -->     
+            <span class="text">Recency min:{df['Recency'].min()}</span>  <!-- Text -->     
+            <span class="text">Recency max:{df['Recency'].max()}</span>  <!-- Text -->               
+        </div>
+        """
+        final_html = css_string + html_string2
+        st.markdown(final_html, unsafe_allow_html=True)
+    with col3:
+        html_string3 = f"""
+        <div class="centered-content">      
+            <span class="icon">🔁</span>  <!-- Icon -->     
+            <span class="text">Frequency min:{df['Frequency'].min()}</span>  <!-- Text -->     
+            <span class="text">Frequency max:{df['Frequency'].max()}</span>  <!-- Text -->               
+        </div>
+        """
+        final_html = css_string + html_string3
+        st.markdown(final_html, unsafe_allow_html=True)        
+    with col4:
+        html_string4 = f"""
+        <div class="centered-content">      
+            <span class="icon">💴</span>  <!-- Icon -->     
+            <span class="text">Monetary min:{df['Monetary'].min()}</span>  <!-- Text -->     
+            <span class="text">Monetary max:{df['Monetary'].max()}</span>  <!-- Text -->               
+        </div>
+        """
+        final_html = css_string + html_string4
+        st.markdown(final_html, unsafe_allow_html=True)      
+
+    st.markdown('<br>', unsafe_allow_html=True)
+    # --------------------------------------------------
+    st.write("#### Danh sách các Cluster:")
+    unique_clusters = df['ClusterName'].unique().tolist()
+
+    # Chia danh sách thành các nhóm 3 phần tử (3 cột)
+    cluster_groups = [unique_clusters[i:i + 3] for i in range(0, len(unique_clusters), 3)]
+
+    # Tạo bảng với 2 hàng và 3 cột
+    for row in cluster_groups:
+        cols = st.columns(len(row))  # Tạo số cột tương ứng với số phần tử trong nhóm
+        for i, cluster in enumerate(row):
+            with cols[i]:
+                st.markdown(f"<h6 style='text-align: left; color: #8D65C5'>{cluster}</h6>", unsafe_allow_html=True)
+         
 # -----------------------------------------------------------------------------------
 def select_one_customers_by_id(customer_id_list,df,st):
     options = ['']+customer_id_list['Member_number'].tolist()
@@ -243,25 +305,7 @@ def select_one_customers_by_id(customer_id_list,df,st):
    
             recent_values=[selected_cus['Recency'].iloc[0],selected_cus['Frequency'].iloc[0],selected_cus['Monetary'].iloc[0]]
             max_values=[df['Recency'].max(),df['Frequency'].max(),df['Monetary'].max()]
-
-            # Xác định các phạm vi
-            ranges = [
-                [
-                    (0, df['Recency'].max() * 0.33, "#32CD32"),     # Từ 0 đến 33% (Tốt) (Lime Green)
-                    (df['Recency'].max() * 0.33, df['Recency'].max() * 0.66, "#FFD700"),  # Từ 33% đến 66% (Trung bình) (Gold)
-                    (df['Recency'].max() * 0.66, float(df['Recency'].max()), "#FF6347")   # Từ 66% đến 100% (Kém) (Tomato)
-                ],
-                [
-                    (0, df['Frequency'].max() * 0.33, "#FF6347"),     # Từ 0 đến 33% (Kém) (Tomato)
-                    (df['Frequency'].max() * 0.33, df['Frequency'].max() * 0.66, "#FFD700"),  # Từ 33% đến 66% (Trung bình) (Gold)
-                    (df['Frequency'].max() * 0.66, float(df['Frequency'].max()), "#32CD32")   # Từ 66% đến 100% (Tốt) (Lime Green)
-                ],
-                [
-                    (0, df['Monetary'].max() * 0.33, "#FF6347"),     # Từ 0 đến 33% (Kém) (Tomato)
-                    (df['Monetary'].max() * 0.33, df['Monetary'].max() * 0.66, "#FFD700"),  # Từ 33% đến 66% (Trung bình) (Gold)
-                    (df['Monetary'].max() * 0.66, float(df['Monetary'].max()), "#32CD32")   # Từ 66% đến 100% (Tốt) (Lime Green) 
-                ]]               
-
+            ranges=xac_dinh_pham_vi(df)
             format_RFM(st,selected_cus,occupation,recent_values,max_values,ranges,False)
             st.write('')
             st.divider()
@@ -295,28 +339,32 @@ def select_one_customers_by_RFM(df,df_name,model,st):
 
     recent_values=[df_new['Recency'].iloc[0],df_new['Frequency'].iloc[0],df_new['Monetary'].iloc[0]]
     max_values=[df['Recency'].max(),df['Frequency'].max(),df['Monetary'].max()]
+    ranges=xac_dinh_pham_vi(df)
+    format_RFM(st,df_new,-1,recent_values,max_values,ranges,True)
+    st.write('')
+    st.divider()
+    giai_thich_ClusterName(st,df_new['ClusterName'].iloc[0])
+
+# ----------------------------------------------------------------------------------- 
+def xac_dinh_pham_vi(df):
     # Xác định các phạm vi
     ranges = [
         [
             (0, df['Recency'].max() * 0.33, "#32CD32"),     # Từ 0 đến 33% (Tốt) (Lime Green)
             (df['Recency'].max() * 0.33, df['Recency'].max() * 0.66, "#FFD700"),  # Từ 33% đến 66% (Trung bình) (Gold)
-            (df['Recency'].max() * 0.66, float(df['Recency'].max()), "#FF6347")             # Từ 66% đến 100% (Kém) (Tomato)
+            (df['Recency'].max() * 0.66, float(df['Recency'].max()), "#FF6347")   # Từ 66% đến 100% (Kém) (Tomato)
         ],
         [
-            (0, df['Frequency'].max() * 0.33, "#32CD32"),     # Từ 0 đến 33% (Tốt) (Lime Green)
+            (0, df['Frequency'].max() * 0.33, "#FF6347"),     # Từ 0 đến 33% (Kém) (Tomato)
             (df['Frequency'].max() * 0.33, df['Frequency'].max() * 0.66, "#FFD700"),  # Từ 33% đến 66% (Trung bình) (Gold)
-            (df['Frequency'].max() * 0.66, float(df['Frequency'].max()), "#FF6347")             # Từ 66% đến 100% (Kém) (Tomato)
+            (df['Frequency'].max() * 0.66, float(df['Frequency'].max()), "#32CD32")   # Từ 66% đến 100% (Tốt) (Lime Green)
         ],
         [
-            (0, df['Monetary'].max() * 0.33, "#32CD32"),     # Từ 0 đến 33% (Tốt) (Lime Green)
+            (0, df['Monetary'].max() * 0.33, "#FF6347"),     # Từ 0 đến 33% (Kém) (Tomato)
             (df['Monetary'].max() * 0.33, df['Monetary'].max() * 0.66, "#FFD700"),  # Từ 33% đến 66% (Trung bình) (Gold)
-            (df['Monetary'].max() * 0.66, float(df['Monetary'].max()), "#FF6347")             # Từ 66% đến 100% (Kém) (Tomato)
-        ]]  
-     
-    format_RFM(st,df_new,-1,recent_values,max_values,ranges,True)
-    st.write('')
-    st.divider()
-    giai_thich_ClusterName(st,df_new['ClusterName'].iloc[0])
+            (df['Monetary'].max() * 0.66, float(df['Monetary'].max()), "#32CD32")   # Từ 66% đến 100% (Tốt) (Lime Green) 
+        ]]   
+    return ranges
 
 # -----------------------------------------------------------------------------------    
 def download_file(st,file_path):
@@ -333,19 +381,19 @@ def download_file(st,file_path):
 def upload_customers_file(st,model,df_name):
     file = st.file_uploader("Chọn file", type=["csv", "txt"])
 
-    if file is not None:
-        df_cus_file = pd.read_csv(file)     
-        df_cus_file=df_cus_file.set_index('Member_number') 
-        st.write('#### Nội dung file upload')          
-        st.write(df_cus_file)
-        # st.markdown(format_table(df_cus_file).to_html(), unsafe_allow_html=True)        
+    if file is not None:        
+        df_cus_file = pd.read_csv(file)
+        df_cus_file=df_cus_file.set_index('Member_number')        
+        st.write('#### Nội dung file upload')    
+        st.write(df_cus_file)     
+
         submitted = st.button("Thực hiện phân nhóm")
         if submitted:
             df_cus_file=create_cluster_name(df_cus_file,df_name,model)
-            df_cus_file['Monetary']=df_cus_file['Monetary'].map(lambda x: f'{x:.1f}')
-            df_cus_file=df_cus_file.reset_index()            
+            df_cus_file=df_cus_file.reset_index()                       
             st.subheader('Bảng phân nhóm danh sách khách hàng 🎉')
             st.markdown(format_table(df_cus_file).to_html(), unsafe_allow_html=True)
+            format_RFM_2(st,df_cus_file)
     else:
         st.write("Vui lòng chọn file.")   
 
@@ -413,6 +461,33 @@ def so_sanh_cac_thuat_toan(st,df):
     st.markdown(html_style + html_table, unsafe_allow_html=True)    
 
 # -----------------------------------------------------------------------------------
+def gauge_chart(value,max_values,ranges,name):  
+    steps=[]
+    for range in ranges:
+        step={'range': [range[0],range[1]],'color':range[2]}
+        steps.append(step)
+
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=value,  # Giá trị hiện tại
+        domain={'x': [0, 1], 'y': [0, 1]},  # Vị trí biểu đồ
+        title={"text":f"{name} max: {max_values}","font":{"size": 17}},
+        gauge={
+            'axis': {'range': [None, max_values]},  # Phạm vi từ 0 đến max
+            'bar': {'color': "blue"},  # Thanh giá trị màu đen
+            'steps':steps
+        }
+    ))
+
+    # Tùy chỉnh chiều cao và rộng của biểu đồ
+    fig.update_layout(
+        height=150,  # Điều chỉnh chiều cao
+        margin=dict(t=0, b=0, l=50, r=50)  # Giảm khoảng cách thừa  
+        )  
+
+    return fig
+
+# -----------------------------------------------------------------------------------
 def truc_quan_hoa_treemap(rfm_agg,modelName):        
     cluster_name='ClusterName'
     if modelName =='Tập luật':
@@ -440,7 +515,6 @@ def truc_quan_hoa_treemap(rfm_agg,modelName):
     fig.update_layout(margin=dict(t=50, l=25, r=25, b=25))
     return fig
 
-
 # -----------------------------------------------------------------------------------
 def truc_quan_hoa_scatter(rfm_agg,modelName):
     cluster_name='ClusterName'
@@ -466,7 +540,6 @@ def truc_quan_hoa_scatter_3d_avg(rfm_agg,modelName):
                                 yaxis_title='Frequency',
                                 zaxis_title='Monetary'))
     return fig 
-
 
 # -----------------------------------------------------------------------------------
 def truc_quan_hoa_scatter_3d_data(df,modelName):
