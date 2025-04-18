@@ -1,6 +1,8 @@
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # -----------------------------------------------------------------------------------
 def giai_thich_ClusterName(st,cluster_name=None):
@@ -459,6 +461,19 @@ def so_sanh_cac_thuat_toan(st,df):
 
     # Hiển thị bảng
     st.markdown(html_style + html_table, unsafe_allow_html=True)    
+
+
+
+# -----------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------
+def plot_distribution(st,data, title, xlabel):
+    fig, ax = plt.subplots(figsize=(8, 6)) # Điều chỉnh kích thước biểu đồ
+    sns.histplot(data, ax=ax, bins=20, kde=True) # Optional: kde=True for density curve
+    ax.set_title(title, fontsize=14) # Điều chỉnh kích thước font chữ
+    ax.set_xlabel(xlabel, fontsize=12)
+    ax.set_ylabel("Số lượng", fontsize=12)
+    st.pyplot(fig)      
 
 # -----------------------------------------------------------------------------------
 def gauge_chart(value,max_values,ranges,name):  

@@ -2,6 +2,12 @@ import pandas as pd
 import pickle
 import my_functions as fn
 
+# import matplotlib.pyplot as plt
+# import seaborn as sns # Optional, for better aesthetics
+# import plotly.express as px
+# import plotly.graph_objects as go
+
+df_RFM=pd.read_csv('files/df_RFM.csv')
 df_full=pd.read_csv('files/df_full.csv')
 df_name=pd.read_csv('files/df_name.csv')
 df_now=pd.read_csv('files/df_now.csv')
@@ -30,23 +36,31 @@ def yeu_cau_cua_doanh_nghiep(st):
 
 # -----------------------------------------------------------------------------------
 def cac_thuat_toan_thu_nghiem(st):
-    tab1, tab2, tab3 = st.tabs(["Tập Luật", "Thuật toán GMM", "Thuật toán KMeans"])   
-    with tab1:
+    tab1, tab2, tab3,tab4 = st.tabs(["Biểu đồ phân phối RFM","Tập Luật", "Thuật toán GMM", "Thuật toán KMeans"])   
+    with tab1:   
+        fn.plot_distribution(st,df_RFM['Recency'], "Phân phối Recency", "Recency")
+        st.divider()
+        fn.plot_distribution(st,df_RFM['Frequency'], "Phân phối Frequency", "Frequency")
+        st.divider()
+        fn.plot_distribution(st,df_RFM['Monetary'], "Phân phối Monetary", "Monetary") 
+    with tab2:
         st.write("### Tập Luật chia làm 5 nhóm") 
         st.write("**Tính giá trị trung bình RFM cho các nhóm**")
         st.markdown(fn.format_table(rfm_agg_TapLuat).to_html(), unsafe_allow_html=True)
-        fn.ve_cac_bieu_do(rfm_agg_TapLuat,df_RFM_TapLuat,st,'Tập luật') 
-    with tab2:
+        fn.ve_cac_bieu_do(rfm_agg_TapLuat,df_RFM_TapLuat,st,'Tập luật')
+    with tab3:
         st.write("### GMM chia làm 5 nhóm")
         rfm_agg_gmm.rename(columns={'Cluster':'ClusterName'},inplace=True)
         df_now_gmm.rename(columns={'Cluster':'ClusterName'},inplace=True)
         df_now_gmm['ClusterName']='Cluster '+ df_now_gmm['ClusterName'].astype(str)
         st.markdown(fn.format_table(rfm_agg_gmm).to_html(), unsafe_allow_html=True)
-        fn.ve_cac_bieu_do(rfm_agg_gmm,df_now_gmm,st,'GMM') 
-    with tab3:
+        fn.ve_cac_bieu_do(rfm_agg_gmm,df_now_gmm,st,'GMM')
+    with tab4:
         st.write("### KMeans với k=6 ,chia làm 6 nhóm")
         st.markdown(fn.format_table(rfm_agg).to_html(), unsafe_allow_html=True)
-        fn.ve_cac_bieu_do(rfm_agg,df_now,st,'KMeans') 
+        fn.ve_cac_bieu_do(rfm_agg,df_now,st,'KMeans')         
+
+  
 
 # -----------------------------------------------------------------------------------
 def lua_chon_ket_qua(st):
