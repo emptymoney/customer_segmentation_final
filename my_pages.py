@@ -95,6 +95,7 @@ def lua_chon_ket_qua(st):
             title='Top 3 sản phẩm (Product) có số lượng bán lớn nhất trong mỗi Cluster',
             legend_title='Sản phẩm',
             data=top_products_per_cluster)
+        fig1.update_layout(height=500)
         st.plotly_chart(fig1)
         st.divider()
 
@@ -104,7 +105,8 @@ def lua_chon_ket_qua(st):
             hue='Category',
             title='Top 3 nhóm sản phẩm (Category) có số lượng bán lớn nhất trong mỗi Cluster',
             legend_title='Nhóm sản phẩm',
-            data=top_category_per_cluster)      
+            data=top_category_per_cluster)     
+        fig2.update_layout(height=500) 
         st.plotly_chart(fig2)
         st.divider()             
 
@@ -115,6 +117,7 @@ def lua_chon_ket_qua(st):
             title='Top 3 sản phẩm (Product) có tổng giá bán (amount) lớn nhất trong mỗi Cluster',
             legend_title='Sản phẩm',
             data=top_products_amount_per_cluster)  
+        fig3.update_layout(height=500)
         st.plotly_chart(fig3)             
         st.divider()
      
