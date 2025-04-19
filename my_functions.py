@@ -266,7 +266,7 @@ def format_RFM_2(st,df):
     df_cluster_ratios = pd.DataFrame({'ClusterName': cluster_counts.index, 'Ratio': cluster_counts.values / cluster_counts.sum()})
     fig = px.pie(df_cluster_ratios, values='Ratio', names='ClusterName', title='Tỷ lệ các Cluster')
     fig.update_layout(title_font_size=20)  # Tăng kích thước tiêu đề
-    fig.update_layout(legend=dict(font=dict(size=24)))  # Tăng kích thước chữ legend
+    fig.update_layout(legend=dict(font=dict(size=22)))  # Tăng kích thước chữ legend
     fig.update_layout(height=400, width=500)  # Thiết lập kích thước tại đây
 
     st.plotly_chart(fig)
