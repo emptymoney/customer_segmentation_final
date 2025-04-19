@@ -354,16 +354,16 @@ def select_one_customers_by_RFM(df,df_name,model,st):
 
     seg=5
     R = st.slider("Recency", recency_min, recency_max, int((recency_max-recency_min)/seg))
-    st.write("Recency: ", R)
+    # st.write("Recency: ", R)
 
     F = st.slider("Frequency", frequency_min, frequency_max, int((frequency_max-frequency_min)/seg))
-    st.write("Frequency: ", F)
+    # st.write("Frequency: ", F)
 
     M_ = st.slider("Monetary", monetary_min, monetary_max, (monetary_max-monetary_min)/seg, 0.1)
     # Tạo number_input để điều chỉnh giá trị chi tiết hơn
     M = st.number_input(f"Nhập giá trị chính xác (từ {monetary_min} đến {monetary_max}):", min_value=monetary_min, max_value=monetary_max, value=M_, step=0.1, format="%.1f")  # Điều chỉnh step và format theo nhu cầu
     M=round(M,1)
-    st.write("Monetary:", M)
+    # st.write("Monetary:", M)
 
     cols=['Recency','Frequency','Monetary']
     df_new=pd.DataFrame([[R,F,M]],columns=cols)
