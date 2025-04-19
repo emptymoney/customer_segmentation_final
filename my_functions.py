@@ -268,8 +268,21 @@ def format_RFM_2(st,df):
     fig.update_layout(title_font_size=20)  # Tăng kích thước tiêu đề
     fig.update_layout(legend=dict(font=dict(size=22)))  # Tăng kích thước chữ legend
     fig.update_layout(height=400, width=500)  # Thiết lập kích thước tại đây
-
     st.plotly_chart(fig)
+
+    selected_option= 'Giải thích Cluster'
+    if selected_option:
+        # Tạo key duy nhất cho session_state dựa trên selected_option
+        expander_key = f"expander_state_{selected_option}"
+
+        # Khởi tạo trạng thái expander là True khi selectbox được chọn
+        if expander_key not in st.session_state:
+            st.session_state[expander_key] = False  # Mặc định đóng expander
+
+        # Hiển thị expander với trạng thái từ session_state
+        with st.expander(str(selected_option), expanded=st.session_state[expander_key]):
+            for name in df_cluster_ratios['ClusterName']:
+                giai_thich_ClusterName(st,name)
 
 
     # st.write("##### Danh sách các Cluster:")
@@ -410,12 +423,18 @@ def upload_customers_file(st,model,df_name):
         submitted = st.button("Thực hiện phân nhóm")
         if submitted:
             df_cus_file=create_cluster_name(df_cus_file,df_name,model)
-            df_cus_file=df_cus_file.reset_index()                       
+            df_cus_file=df_cus_file.reset_index()   
             st.subheader('Bảng phân nhóm danh sách khách hàng 🎉')
             st.markdown(format_table(df_cus_file).to_html(), unsafe_allow_html=True)
             format_RFM_2(st,df_cus_file)
     else:
         st.write("Vui lòng chọn file.")   
+
+# -----------------------------------------------------------------------------------
+# Tạo callback function cho sự kiện click
+def on_click(st,row_index):
+    st.session_state.selected_row = row_index
+    st.experimental_rerun()        
 
 # -----------------------------------------------------------------------------------
 def get_top_products_cluster_info(df, top_n=3):
