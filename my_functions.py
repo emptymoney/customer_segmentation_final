@@ -201,18 +201,18 @@ def format_RFM_2(st,df):
             display: block;
         }
         .centered-content .icon {
-            font-size: 35px; 
+            font-size: 40px; 
         }
         .centered-content .text {
-            font-size: 15px;
+            font-size: 18px;
             color: #00A6ED;
         }
         /* Selector CSS cụ thể hơn cho cột */
         div[data-testid="stVerticalBlock"] .centered-content .icon { 
-            font-size: 35px !important; 
+            font-size: 40px !important; 
         }
         div[data-testid="stVerticalBlock"] .centered-content .text {
-            font-size: 15px !important;
+            font-size: 18px !important;
         }
         </style>
     """   
@@ -260,20 +260,34 @@ def format_RFM_2(st,df):
         final_html = css_string + html_string4
         st.markdown(final_html, unsafe_allow_html=True)      
 
-    st.markdown('<br>', unsafe_allow_html=True)
+    # st.markdown('<br>', unsafe_allow_html=True)
     # --------------------------------------------------
-    st.write("#### Danh sách các Cluster:")
-    unique_clusters = df['ClusterName'].unique().tolist()
+    cluster_counts = df['ClusterName'].value_counts()
+    df_cluster_ratios = pd.DataFrame({'ClusterName': cluster_counts.index, 'Ratio': cluster_counts.values / cluster_counts.sum()})
+    fig = px.pie(df_cluster_ratios, values='Ratio', names='ClusterName', title='Tỷ lệ các Cluster')
+    fig.update_layout(title_font_size=20)  # Tăng kích thước tiêu đề
+    fig.update_layout(legend=dict(font=dict(size=24)))  # Tăng kích thước chữ legend
+    fig.update_layout(height=400, width=500)  # Thiết lập kích thước tại đây
 
-    # Chia danh sách thành các nhóm 3 phần tử (3 cột)
-    cluster_groups = [unique_clusters[i:i + 3] for i in range(0, len(unique_clusters), 3)]
+    st.plotly_chart(fig)
 
-    # Tạo bảng với 2 hàng và 3 cột
-    for row in cluster_groups:
-        cols = st.columns(len(row))  # Tạo số cột tương ứng với số phần tử trong nhóm
-        for i, cluster in enumerate(row):
-            with cols[i]:
-                st.markdown(f"<h6 style='text-align: left; color: #8D65C5'>{cluster}</h6>", unsafe_allow_html=True)
+
+    # st.write("##### Danh sách các Cluster:")
+    # unique_clusters = df['ClusterName'].unique().tolist()
+
+    # # Chia danh sách thành các nhóm 3 phần tử (3 cột)
+    # cluster_groups = [unique_clusters[i:i + 3] for i in range(0, len(unique_clusters), 3)]
+
+    # # Tạo bảng với 2 hàng và 3 cột
+    # for row in cluster_groups:
+    #     cols = st.columns(len(row))  # Tạo số cột tương ứng với số phần tử trong nhóm
+    #     for i, cluster in enumerate(row):
+    #         with cols[i]:
+    #             st.markdown(f"<h5 style='text-align: left; color: #8D65C5'>{cluster}</h5>", unsafe_allow_html=True)
+
+
+
+
          
 # -----------------------------------------------------------------------------------
 def select_one_customers_by_id(customer_id_list,df,st):
@@ -282,9 +296,8 @@ def select_one_customers_by_id(customer_id_list,df,st):
         format_func=lambda x: 'Chọn một khách hàng' if x == '' else x,
     )
 
-    if occupation!='':
-        
-        st.write("Khách hàng được chọn:", occupation)
+    if occupation!='':        
+        # st.write("Khách hàng được chọn:", occupation)
         search_cus=df[df['Member_number']==occupation]
         if not search_cus.empty:
             selected_cus=search_cus.groupby(['ClusterName','Recency','Frequency','Monetary']).agg({'amount':'sum'})
@@ -296,8 +309,8 @@ def select_one_customers_by_id(customer_id_list,df,st):
             format_RFM(st,selected_cus,occupation,recent_values,max_values,ranges,False)
             # st.write('')
 
+            st.write('**Lịch sử giao dịch của khách hàng:**')
             selected_option= str(occupation)
-
             if selected_option:
                 # Tạo key duy nhất cho session_state dựa trên selected_option
                 expander_key = f"expander_state_{selected_option}"

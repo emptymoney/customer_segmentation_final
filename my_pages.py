@@ -134,7 +134,7 @@ def lua_chon_ket_qua(st):
 # -----------------------------------------------------------------------------------
 def ung_dung_phan_nhom(st):   
     st.write("### 📈Dự đoán và Phân nhóm Khách hàng")   
-    status = st.radio("**Chọn cách nhập thông tin khách hàng:**", ("🆔Nhập id khách hàng là thành viên của cửa hàng:", "📊Nhập RFM của khách hàng:","⬆️Upload file chứa thông tin mã khách hàng cùng với RFM:"))   
+    status = st.radio("**Chọn cách nhập thông tin khách hàng:**", ("🆔Nhập id khách hàng là thành viên của cửa hàng:", "📊Nhập RFM của khách hàng:","📤Upload file chứa thông tin mã khách hàng cùng với RFM:"))   
 
     st.write(f'**{status}**')
     if status=="🆔Nhập id khách hàng là thành viên của cửa hàng:":
@@ -142,10 +142,10 @@ def ung_dung_phan_nhom(st):
         fn.select_one_customers_by_id(list_customers,df_full,st)        
     elif status=='📊Nhập RFM của khách hàng:':                
         fn.select_one_customers_by_RFM(df_full,df_name,kmeans_model,st)
-    elif status=='⬆️Upload file chứa thông tin mã khách hàng cùng với RFM:':    
-        st.write("**⬇️Download file mẫu tại đây:**")  
+    elif status=='📤Upload file chứa thông tin mã khách hàng cùng với RFM:':    
+        st.write("**⏬Download file mẫu tại đây:**")  
         fn.download_file(st,'files/file_mau.csv')
-        st.write("**⬆️Upload file để phân nhóm tại đây:**")        
+        st.write("**⏫Upload file để phân nhóm tại đây:**")        
         fn.upload_customers_file(st,kmeans_model,df_name) 
 
 # ===================================================================================
