@@ -361,7 +361,7 @@ def select_one_customers_by_RFM(df,df_name,model,st):
 
     M_ = st.slider("Monetary", monetary_min, monetary_max, (monetary_max-monetary_min)/seg, 0.1)
     # Tạo number_input để điều chỉnh giá trị chi tiết hơn
-    M = st.number_input("Nhập giá trị chính xác:", min_value=monetary_min, max_value=monetary_max, value=M_, step=0.1, format="%.1f")  # Điều chỉnh step và format theo nhu cầu
+    M = st.number_input(f"Nhập giá trị chính xác (từ {monetary_min} đến {monetary_max}):", min_value=monetary_min, max_value=monetary_max, value=M_, step=0.1, format="%.1f")  # Điều chỉnh step và format theo nhu cầu
     M=round(M,1)
     st.write("Monetary:", M)
 
