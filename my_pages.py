@@ -7,6 +7,7 @@ df_full=pd.read_csv('files/df_full.csv')
 df_name=pd.read_csv('files/df_name.csv')
 df_now=pd.read_csv('files/df_now.csv')
 rfm_agg=pd.read_csv('files/rfm_agg.csv')
+MoTaMauSac=pd.read_csv('files/MoTaMauSac.csv', encoding='utf-8')
 df_SoSanhThuatToan=pd.read_csv('files/SoSanhThuatToan.csv',delimiter=';')
 
 df_RFM_TapLuat=pd.read_csv('files/df_RFM_TapLuat.csv')
@@ -147,6 +148,60 @@ def ung_dung_phan_nhom(st):
         fn.download_file(st,'files/file_mau.csv')
         st.write("**⏫Upload file để phân nhóm tại đây:**")        
         fn.upload_customers_file(st,kmeans_model,df_name) 
+
+
+# -----------------------------------------------------------------------------------
+def test(st):
+
+    # tạo danh sách các cặp màu từ file có sẵn
+    color_pairs=[]
+    for index, row in MoTaMauSac.iterrows():
+        mauFont=row['mau_chu']
+        mauNen=row['mau_nen']
+        color_pairs.append((mauFont,mauNen))
+
+    l=len(color_pairs)
+
+    i=1
+    tab1,tab2 = st.tabs(['Color1','Color2'])
+    with tab1:
+        color_pairs_1=color_pairs[0:25]
+        for font_color, background_color in color_pairs_1:        
+            try:
+                st.write('')
+                st.write('')
+                st.write(f'{i}. font_color:{font_color}, background_color:{background_color}')
+                st.markdown(
+                    f'<div style="background-color: {background_color}; color: {font_color}; padding: 10px; border-radius: 5px; margin-bottom: 10px;">'
+                    'Đây là văn bản với màu sắc đã chọn.'
+                    '</div>',
+                    unsafe_allow_html=True,
+                )
+                i=i+1
+            except ValueError:
+                st.error(f"Mã màu không hợp lệ: font - {font_color}, background - {background_color}")        
+    with tab2:
+        color_pairs_2=color_pairs[i-1:l+1]
+        for font_color, background_color in color_pairs_2:        
+            try:
+                st.write('')
+                st.write('')
+                st.write(f'{i}. font_color:{font_color}, background_color:{background_color}')
+                st.markdown(
+                    f'<div style="background-color: {background_color}; color: {font_color}; padding: 10px; border-radius: 5px; margin-bottom: 10px;">'
+                    'Đây là văn bản với màu sắc đã chọn.'
+                    '</div>',
+                    unsafe_allow_html=True,
+                )
+                i=i+1
+            except ValueError:
+                st.error(f"Mã màu không hợp lệ: font - {font_color}, background - {background_color}")        
+
+
+
+
+
+
 
 # ===================================================================================
 if __name__ == "__main__":

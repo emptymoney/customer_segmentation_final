@@ -5,7 +5,7 @@ import my_pages as mp
 menu = ["Trang chủ", "Yêu cầu của doanh nghiệp","Các thuật toán thử nghiệm", "Lựa chọn kết quả","Ứng dụng phân nhóm"]
 with st.sidebar:
     selected = option_menu("Menu chính", menu, 
-        icons=['house', '1-square', '2-square','3-square','4-square'], menu_icon="cast", default_index=0)
+        icons=['house', '1-square', '2-square','3-square','4-square','5-square'], menu_icon="cast", default_index=0)
     
 if selected == "Trang chủ":
     mp.trang_chu(st)
@@ -17,6 +17,8 @@ elif selected=="Lựa chọn kết quả":
     mp.lua_chon_ket_qua(st)
 elif selected=="Ứng dụng phân nhóm":
     mp.ung_dung_phan_nhom(st)
+# elif selected=="test":
+#     mp.test(st)
 
 #-------------------------------------------------------------
 st.sidebar.subheader("📒 Nhóm thực hiện:")

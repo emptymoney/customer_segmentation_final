@@ -188,7 +188,7 @@ def format_RFM(st,df,occupation,recent_values,max_values,ranges,visitor=False):
             unsafe_allow_html=True
         )    
         fig_gauge_chart=gauge_chart(recent_values[2],max_values[2],ranges[2],'Monetary')
-        st.plotly_chart(fig_gauge_chart)       
+        st.plotly_chart(fig_gauge_chart)   
 
 # -----------------------------------------------------------------------------------        
 def format_RFM_2(st,df):
@@ -204,26 +204,27 @@ def format_RFM_2(st,df):
             font-size: 40px; 
         }
         .centered-content .text {
-            font-size: 18px;
-            color: #00A6ED;
-        }
+            font-size: 15px;
+            color: #264653;
+            background-color: #ADD8E6;
+            border-radius: 10px; /* Bo tròn góc 8px */
+        }      
         /* Selector CSS cụ thể hơn cho cột */
         div[data-testid="stVerticalBlock"] .centered-content .icon { 
             font-size: 40px !important; 
         }
         div[data-testid="stVerticalBlock"] .centered-content .text {
-            font-size: 18px !important;
+            font-size: 15px !important;
         }
         </style>
     """   
-           
+
     col1,col2,col3,col4=st.columns(4)
     with col1:
         html_string1 = f"""
         <div class="centered-content">      
             <span class="icon">👨‍👩‍👧‍👦</span>  <!-- Icon -->     
-            <span class="text">Số Khách hàng:{df['Member_number'].nunique()}</span>  <!-- Text -->     
-            <span class="text">Số Cluster:{df['ClusterName'].nunique()}</span>  <!-- Text -->               
+            <span class="text">Số Khách hàng: <span style="font-weight: bold; font-size: 25px;color: #EB685E;">{df['Member_number'].nunique()}</span><br>Số Cluster: <span style="font-weight: bold; font-size: 25px;color: #EB685E;">{df['ClusterName'].nunique()}</span></span>  <!-- Text -->                               
         </div>
         """
         final_html = css_string + html_string1
@@ -233,8 +234,7 @@ def format_RFM_2(st,df):
         html_string2 = f"""
         <div class="centered-content">      
             <span class="icon">📅</span>  <!-- Icon -->     
-            <span class="text">Recency min:{df['Recency'].min()}</span>  <!-- Text -->     
-            <span class="text">Recency max:{df['Recency'].max()}</span>  <!-- Text -->               
+            <span class="text">Recency min: <span style="font-weight: bold; font-size: 25px;color: #EB685E;">{df['Recency'].min()}</span><br>Recency max: <span style="font-weight: bold; font-size: 25px;color: #EB685E;">{df['Recency'].max()}</span></span>  <!-- Text -->                 
         </div>
         """
         final_html = css_string + html_string2
@@ -243,18 +243,17 @@ def format_RFM_2(st,df):
         html_string3 = f"""
         <div class="centered-content">      
             <span class="icon">🔁</span>  <!-- Icon -->     
-            <span class="text">Frequency min:{df['Frequency'].min()}</span>  <!-- Text -->     
-            <span class="text">Frequency max:{df['Frequency'].max()}</span>  <!-- Text -->               
+            <span class="text">Frequency min: <span style="font-weight: bold; font-size: 25px;color: #EB685E;">{df['Frequency'].min()}</span><br>Frequency max: <span style="font-weight: bold; font-size: 25px;color: #EB685E;">{df['Frequency'].max()}</span></span>  <!-- Text -->                 
         </div>
         """
         final_html = css_string + html_string3
         st.markdown(final_html, unsafe_allow_html=True)        
     with col4:
+        # display: inline-block;
         html_string4 = f"""
         <div class="centered-content">      
             <span class="icon">💴</span>  <!-- Icon -->     
-            <span class="text">Monetary min:{df['Monetary'].min()}</span>  <!-- Text -->     
-            <span class="text">Monetary max:{df['Monetary'].max()}</span>  <!-- Text -->               
+            <span class="text">Monetary min: <span style="font-weight: bold; font-size: 25px;color: #EB685E;">{df['Monetary'].min()}</span><br>Monetary max: <span style="font-weight: bold; font-size: 25px;color: #EB685E;">{df['Monetary'].max()}</span></span>  <!-- Text -->                 
         </div>
         """
         final_html = css_string + html_string4
