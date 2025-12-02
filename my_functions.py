@@ -303,7 +303,7 @@ def format_RFM_2(st,df):
          
 # -----------------------------------------------------------------------------------
 def select_one_customers_by_id(customer_id_list,df,st):
-    options = ['']+customer_id_list['Member_number'].tolist()
+    options = ['']+customer_id_list['Member_number'].astype(str).tolist()
     occupation = st.selectbox('Chọn khách hàng theo id (Member_number):',options,
         format_func=lambda x: 'Chọn một khách hàng' if x == '' else x,
     )
@@ -636,3 +636,4 @@ def ve_cac_bieu_do(rfm_agg,df,st,modelName):
 # ===================================================================================
 if __name__ == "__main__":
     pass
+
