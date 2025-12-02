@@ -308,8 +308,14 @@ def select_one_customers_by_id(customer_id_list,df,st):
         format_func=lambda x: 'Chọn một khách hàng' if x == '' else x,
     )
 
-    if occupation!='':        
+    # if occupation!='':        
+    if occupation and occupation != '':
         # st.write("Khách hàng được chọn:", occupation)
+        # Lọc dữ liệu theo id đã chọn
+        selected_customer = df[df['Member_number'].astype(str) == occupation]
+        st.write("Thông tin khách hàng đã chọn:")
+        st.write(selected_customer)
+    
         search_cus=df[df['Member_number']==occupation]
         if not search_cus.empty:
             selected_cus=search_cus.groupby(['ClusterName','Recency','Frequency','Monetary']).agg({'amount':'sum'})
@@ -636,5 +642,6 @@ def ve_cac_bieu_do(rfm_agg,df,st,modelName):
 # ===================================================================================
 if __name__ == "__main__":
     pass
+
 
 
